@@ -5,33 +5,31 @@ import os
 import random
 import numpy as np
 import cv2
-
 import torch
 from torch.utils.data import Dataset
-
 import librosa
 from tqdm import tqdm
 
-from utils import *
+from utils.tools import *
 
 class image_loader(Dataset):
     def __init__(self, data_dir, folds_file, test_fold, train_flag, params_json, input_transform=None, stetho_id=-1, aug_scale=None):
-
         # getting device-wise information
         self.file_to_device = {}
         device_to_id = {}
         device_id = 0
         files = os.listdir(data_dir)
         device_patient_list = []
-        pats = []
+        pats = []  # all of patient number
         for f in files:
-            device = f.strip().split('_')[-1].split('.')[0]
+            device = f.strip().split('_')[-1].split('.')[0]  # name of divice
             if device not in device_to_id:
                 device_to_id[device] = device_id
                 device_id += 1
                 device_patient_list.append([])
             self.file_to_device[f.strip().split('.')[0]] = device_to_id[device]
-            pat = f.strip().split('_')[0]
+            pat = f.strip().split('_')[0]  # Patient number
+   
             if pat not in device_patient_list[device_to_id[device]]:
                 device_patient_list[device_to_id[device]].append(pat)
             if pat not in pats:
