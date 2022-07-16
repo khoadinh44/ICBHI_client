@@ -66,18 +66,31 @@ def get_label(crackle, wheeze):
   else:
       return 3
     
-def get_sound_sample(recording_annotations, file_name, data_dir, sample_rate):
-  sample_data = [file_name]
-  data, rate = librosa.load(os.path.join(data_dir, filename + '.wav'), sr=sample_rate)
-  for i in range(len(recording_annotations.index)):
-    row = recording_annotations.loc[i]
-    start = row['Start']
-    end = row['End']
-    crackles = row['Crackles']
-    wheezes = row['Wheezes']
+def get_sound_samples(recording_annotations, file_name, data_dir, sample_rate):
+    sample_data = [file_name]
+    # load file with specified sample rate (also converts to mono)
+    data, rate = librosa.load(os.path.join(data_dir, file_name+'.wav'), sr=sample_rate)
+    #print("Sample Rate", rate)
     
-    audio_chunk = slice_data(start, end, data, rate)
-    sample_data.append((audio_chunk, start, end, get_label(crackles, wheezes)))
+    for i in range(len(recording_annotations.index)):
+        row = recording_annotations.loc[i]
+        start = row['Start']
+        end = row['End']
+        crackles = row['Crackles']
+        wheezes = row['Wheezes']
+        audio_chunk = slice_data(start, end, data, rate)
+        sample_data.append((audio_chunk, start,end, get_label(crackles, wheezes)))
+    return sample_data
+
+# split samples according to desired length
+'''
+types:
+* 0: simply pad by zeros
+* 1: pad with duplicate on both sides (half-n-half)
+* 2: pad with augmented sample on both sides (half-n-half)	
+'''
+def split_and_pad(original, desiredLength, sample_rate, types=0):
+	
 
 
 
