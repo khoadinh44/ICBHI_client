@@ -19,7 +19,7 @@ class image_loader(Dataset):
         device_to_id = {}
         device_id = 0
         files = os.listdir(data_dir)
-        device_patient_list = []
+        device_patient_list = []  # gather patient on each device
         pats = []  # all of patient number
         for f in files:
             device = f.strip().split('_')[-1].split('.')[0]  # name of divice
@@ -37,16 +37,16 @@ class image_loader(Dataset):
 
         print("DEVICE DICT", device_to_id)
         for idx in range(device_id):
-            print("Device", idx, len(device_patient_list[idx]))
+            print(f"Device ID: {idx} \t Number of patient: {len(device_patient_list[idx])}")
 
         # get patients dict in current fold based on train flag
-        all_patients = open(folds_file).read().splitlines()
+        all_patients = open(folds_file).read().splitlines()  # Patient ID and folder
         patient_dict = {}
         for line in all_patients:
             idx, fold = line.strip().split(' ')
-            if train_flag and int(fold) != test_fold:
+            if train_flag and int(fold) != test_fold:  # train_flag==True, test_fold=4 --> gather training data on folders: 0, 1, 2, 3
                 patient_dict[idx] = fold
-            elif train_flag == False and int(fold) == test_fold:
+            elif train_flag == False and int(fold) == test_fold:  # train_flag==False, test_fold=4 --> gather test data on folder: 4
                 patient_dict[idx] = fold
 
         #extracting the audiofilenames and the data for breathing cycle and it's label
