@@ -34,24 +34,25 @@ def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
 
 def Extract_Annotation_Data(file_name, data_dir):
     tokens = file_name.split('_')
-    recording_info = pd.DataFrame(data = [tokens], columns = ['Patient Number', 'Recording index', 'Chest location','Acquisition mode','Recording equipment'])
+    recording_info = pd.DataFrame(data = [tokens], columns = ['Patient Number', 'Recording index', 'Chest location','Acquisition mode','Recording equipment']) # gather 5 elements into one file
     recording_annotations = pd.read_csv(os.path.join(data_dir, file_name + '.txt'), names = ['Start', 'End', 'Crackles', 'Wheezes'], delimiter= '\t')
     return recording_info, recording_annotations
 
 # get annotations data and filenames
 def get_annotations(data_dir):
-	filenames = [s.split('.')[0] for s in os.listdir(data_dir) if '.txt' in s]
-	i_list = []
-	rec_annotations_dict = {}
-	for s in filenames:
-		i,a = Extract_Annotation_Data(s, data_dir)
-		i_list.append(i)
-		rec_annotations_dict[s] = a
+    filenames = [s.split('.')[0] for s in os.listdir(data_dir) if '.txt' in s] # name on .txt files
+    i_list = []
+    rec_annotations_dict = {} # each file name having time and labels
+    for s in filenames:
+        if len(s.split('_')) == 5: # check unaccept files
+            i, a = Extract_Annotation_Data(s, data_dir)
+            i_list.append(i)
+            rec_annotations_dict[s] = a
+    
+    recording_info = pd.concat(i_list, axis = 0)
+    recording_info.head()
 
-	recording_info = pd.concat(i_list, axis = 0)
-	recording_info.head()
-
-	return filenames, rec_annotations_dict
+    return filenames, rec_annotations_dict
 
 def slice_data(start, end, raw_data, sample_rate):
     max_ind = len(raw_data) 
