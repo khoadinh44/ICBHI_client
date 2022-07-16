@@ -122,7 +122,6 @@ class image_loader(Dataset):
         print("LEN AUDIO DATA", len(self.audio_data))
 
     def new_augment(self, scale=1):
-
         # augment normal
         aug_nos = scale*len(self.classwise_cycle_list[0]) - len(self.classwise_cycle_list[0])
         for idx in range(aug_nos):
@@ -161,8 +160,7 @@ class image_loader(Dataset):
                 sample_j = self.classwise_cycle_list[1][j]
 
             new_sample = np.concatenate([sample_i[0], sample_j[0]])
-            self.cycle_list.append((new_sample, 1, sample_i[2]+'-'+sample_j[2],
-                idx, 0))
+            self.cycle_list.append((new_sample, 1, sample_i[2]+'-'+sample_j[2], idx, 0))
             self.filenames_with_labels.append(sample_i[2]+'-'+sample_j[2]+'_'+str(idx)+'_1')
         
         # augment wheeze
