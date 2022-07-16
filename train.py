@@ -21,9 +21,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 # load external modules
-from utils import *
-from image_dataloader import *
-from nets.network_cnn import *
+from utils.tools import *
+from utils.image_dataloader import *
 #from nets.network_hybrid import *
 from sklearn.metrics import confusion_matrix, accuracy_score
 print ("Train import done successfully")
