@@ -81,12 +81,12 @@ def get_score(hits, counts, pflag=False):
             hits[2]/counts[2], hits[3]/counts[3]))
     
 
-mean, std = get_mean_and_std(image_loader(self.args.data_dir, self.args.folds_file, self.args.test_fold, True, "Params_json", Compose([ToTensor()]), stetho_id=self.args.stetho_id))
+mean, std = get_mean_and_std(image_loader(args.data_dir, args.folds_file, args.test_fold, True, "Params_json", Compose([ToTensor()]), stetho_id=self.args.stetho_id))
 print("MEAN",  mean, "STD", std)
 
 input_transform = Compose([ToTensor(), Normalize(mean, std)])
-train_dataset = image_loader(self.args.data_dir, self.args.folds_file, self.args.test_fold, True, "params_json", self.input_transform, stetho_id=self.args.stetho_id, aug_scale=self.args.aug_scale)
-test_dataset = image_loader(self.args.data_dir, self.args.folds_file, self.args.test_fold,  False, "params_json", self.input_transform, stetho_id=self.args.stetho_id)
+train_dataset = image_loader(args.data_dir, args.folds_file, args.test_fold, True, "params_json", input_transform, stetho_id=args.stetho_id, aug_scale=args.aug_scale)
+test_dataset = image_loader(args.data_dir, args.folds_file, args.test_fold,  False, "params_json", input_transform, stetho_id=args.stetho_id)
 test_ids = np.array(test_dataset.identifiers)
 test_paths = test_dataset.filenames_with_labels
 
