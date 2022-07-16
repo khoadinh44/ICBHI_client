@@ -97,31 +97,29 @@ types:
 * 2: pad with augmented sample on both sides (half-n-half)	
 '''
 def split_and_pad(original, desiredLength, sample_rate, types=0):
-	if types==0:
-		return split_and_pad_old(original, desiredLength, sample_rate)
+    if types==0:
+        return split_and_pad_old(original, desiredLength, sample_rate)
 
-	output_buffer_length = int(desiredLength*sample_rate)
-	soundclip = original[0].copy()
-	n_samples = len(soundclip)
+    output_buffer_length = int(desiredLength*sample_rate)
+    soundclip = original[0].copy()
+    n_samples = len(soundclip)
 
-	output = []
-	# if: the audio sample length > desiredLength, then split & pad
-	# else: simply pad according to given type 1 or 2
-	if n_samples > output_buffer_length:
-		frames = librosa.util.frame(soundclip, frame_length=output_buffer_length, hop_length=output_buffer_length//2, axis=0)
-		for i in range(frames.shape[0]):
-			output.append((frames[i], original[1], original[2], original[3], original[4], i, 0))
+    output = []
+    # if: the audio sample length > desiredLength, then split & pad
+    # else: simply pad according to given type 1 or 2
+    if n_samples > output_buffer_length:
+        frames = librosa.util.frame(soundclip, frame_length=output_buffer_length, hop_length=output_buffer_length//2, axis=0)
+        for i in range(frames.shape[0]):
+            output.append((frames[i], original[1], original[2], original[3], original[4], i, 0))
 
-		last_id = frames.shape[0]*(output_buffer_length//2)
-		last_sample = soundclip[last_id:]; pad_times = (output_buffer_length-len(last_sample))/len(last_sample)
-		padded = generate_padded_samples(soundclip, last_sample, output_buffer_length, sample_rate, types)
-		output.append((padded, original[1], original[2], original[3], original[4], i+1, pad_times))
-
-	else:
-		padded = generate_padded_samples(soundclip, soundclip, output_buffer_length, sample_rate, types); pad_times = (output_buffer_length-len(soundclip))/len(soundclip)
-		output.append((padded, original[1], original[2], original[3], original[4], 0, pad_times))
-
-	return output
+        last_id = frames.shape[0]*(output_buffer_length//2)
+        last_sample = soundclip[last_id:]; pad_times = (output_buffer_length-len(last_sample))/len(last_sample)
+        padded = generate_padded_samples(soundclip, last_sample, output_buffer_length, sample_rate, types)
+        output.append((padded, original[1], original[2], original[3], original[4], i+1, pad_times))
+    else:
+        padded = generate_padded_samples(soundclip, soundclip, output_buffer_length, sample_rate, types); pad_times = (output_buffer_length-len(soundclip))/len(soundclip)
+        output.append((padded, original[1], original[2], original[3], original[4], 0, pad_times))
+    return output
 
 def split_and_pad_old(original, desiredLength, sample_rate):
     output_buffer_length = int(desiredLength * sample_rate)
@@ -155,47 +153,45 @@ def generate_padded_samples_old(source, output_length):
     return copy
 
 def generate_padded_samples(original, source, output_length, sample_rate, types):
-	copy = np.zeros(output_length, dtype=np.float32)
-	src_length = len(source)
-	left = output_length-src_length # amount to be padded
-	# pad front or back
-	prob = random.random()
-	if types == 1:
-		aug = original
-	else:
-		aug = gen_augmented(original, sample_rate)
+    copy = np.zeros(output_length, dtype=np.float32)
+    src_length = len(source)
+    left = output_length-src_length # amount to be padded
+    # pad front or back
+    prob = random.random()
+    if types == 1:
+        aug = original
+    else:
+        aug = gen_augmented(original, sample_rate)
 
-	while len(aug) < left:
-		aug = np.concatenate([aug, aug])
+    while len(aug) < left:
+        aug = np.concatenate([aug, aug])
 
-	if prob < 0.5:
-		#pad back
-		copy[left:] = source
-		copy[:left] = aug[len(aug)-left:]
-	else:
-		#pad front
-		copy[:src_length] = source[:]
-		copy[src_length:] = aug[:left]
-
-	return copy
+    if prob < 0.5:
+        #pad back
+        copy[left:] = source
+        copy[:left] = aug[len(aug)-left:]
+    else:
+        #pad front
+        copy[:src_length] = source[:]
+        copy[src_length:] = aug[:left]
+    return copy
 
 
 #**********************DATA AUGMENTAION***************************
 #Creates a copy of each time slice, but stretches or contracts it by a random amount
 def gen_augmented(original, sample_rate):
-	# list of augmentors available from the nlpaug library
-	augment_list = [
-	#naa.CropAug(sampling_rate=sample_rate)
-	naa.NoiseAug(),
-	naa.SpeedAug(),
-	naa.LoudnessAug(factor=(0.5, 2)),
-	naa.VtlpAug(sampling_rate=sample_rate, zone=(0.0, 1.0)),
-	naa.PitchAug(sampling_rate=sample_rate, factor=(-1,3))
-	]
-	# sample augmentation randomly
-	aug_idx = random.randint(0, len(augment_list)-1)
-	augmented_data = augment_list[aug_idx].augment(original)
-	return augmented_data
+    # list of augmentors available from the nlpaug library
+    augment_list = [
+    #naa.CropAug(sampling_rate=sample_rate)
+    naa.NoiseAug(),
+    naa.SpeedAug(),
+    naa.LoudnessAug(factor=(0.5, 2)),
+    naa.VtlpAug(sampling_rate=sample_rate, zone=(0.0, 1.0)),
+    naa.PitchAug(sampling_rate=sample_rate, factor=(-1,3))]
+    # sample augmentation randomly
+    aug_idx = random.randint(0, len(augment_list)-1)
+    augmented_data = augment_list[aug_idx].augment(original)
+    return augmented_data
 
 #Same as above, but applies it to a list of samples
 def augment_list(audio_with_labels, sample_rate, n_repeats):
@@ -309,5 +305,3 @@ def save_images(image, train_flag):
         if not os.path.isdir(save_dir):
             os.makedirs(save_dir)
         cv2.imwrite(os.path.join(save_dir, image[1]+'_'+str(image[2])+'_'+str(image[3])+'_'+str(image[4])+'.jpg'), cv2.cvtColor(image[0], cv2.COLOR_RGB2BGR))
-
-
