@@ -82,10 +82,16 @@ class image_loader(Dataset):
         self.classwise_cycle_list = [[], [], [], []]
         for idx, file_name in tqdm(enumerate(self.filenames)):
             data = get_sound_samples(rec_annotations_dict[file_name], file_name, data_dir, self.sample_rate)
+
+            # (d[0], d[3], file_name, cycle_idx, 0) == (data, label, idx, 0)
             cycles_with_labels = [(d[0], d[3], file_name, cycle_idx, 0) for cycle_idx, d in enumerate(data[1:])]
-            self.cycle_list.extend(cycles_with_labels)
+            # concatenate cycle_list and cycles_with_labels --> 1D vector: [(...), (...), (...),...]
+            self.cycle_list.extend(cycles_with_labels) 
+            
             for cycle_idx, d in enumerate(cycles_with_labels):
-                self.filenames_with_labels.append(file_name+'_'+str(d[3])+'_'+str(d[1]))
+                # constructure of each file in filenames_with_labels: 'filename_cycleidx_label'
+                self.filenames_with_labels.append(file_name + '_' + str(d[3]) + '_' + str(d[1]))
+                # categorize (data, label, idx, 0) according to label(label==index)
                 self.classwise_cycle_list[d[1]].append(d)
         
         # concatenation based augmentation scheme
