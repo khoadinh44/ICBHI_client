@@ -15,6 +15,7 @@ from utils.tools import *
 class image_loader(Dataset):
     def __init__(self, data_dir, folds_file, test_fold, train_flag, params_json, input_transform=None, stetho_id=-1, aug_scale=None):
         # getting device-wise information
+        # params_json == 'params_json' file
         self.file_to_device = {}
         device_to_id = {}
         device_id = 0
@@ -49,9 +50,10 @@ class image_loader(Dataset):
             elif train_flag == False and int(fold) == test_fold:  # train_flag==False, test_fold=4 --> gather test data on folder: 4
                 patient_dict[idx] = fold
 
-        #extracting the audiofilenames and the data for breathing cycle and it's label
+        # extracting the audiofilenames and the data for breathing cycle and it's label
         print("Getting filenames ...")
-        filenames, rec_annotations_dict = get_annotations(data_dir)
+        # rec_annotations_dict = {filename: ['Start', 'End', 'Crackles', 'Wheezes']}
+        filenames, rec_annotations_dict = get_annotations(data_dir) 
         if stetho_id >= 0:
             self.filenames = [s for s in filenames if s.split('_')[0] in patient_dict and self.file_to_device[s] == stetho_id]
         else:
