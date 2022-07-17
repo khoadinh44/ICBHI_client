@@ -16,7 +16,7 @@ print ("Train import done successfully")
 # input argmuments
 parser = argparse.ArgumentParser(description='RespireNet: Lung Sound Classification')
 parser.add_argument('--lr', default = 1e-3, type=float, help='learning rate')
-parser.add_argument('--image_length', default = 128, type=int, help='height and width of image')
+parser.add_argument('--image_length', default = 224, type=int, help='height and width of image')
 parser.add_argument('--batch_size', default = 16, type=int, help='bacth size')
 parser.add_argument('--epochs', default = 10, type=int, help='epochs')
 
