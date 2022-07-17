@@ -9,13 +9,14 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-from utils.tools import to_onehot, load_df
+from utils.tools import to_onehot, load_df, create_spectrograms_raw
 from sklearn.metrics import confusion_matrix, accuracy_score
 print ("Train import done successfully")
 
 # input argmuments
 parser = argparse.ArgumentParser(description='RespireNet: Lung Sound Classification')
 parser.add_argument('--lr', default = 1e-3, type=float, help='learning rate')
+parser.add_argument('--image_length', default = 128, type=int, help='height and width of image')
 parser.add_argument('--batch_size', default = 16, type=int, help='bacth size')
 parser.add_argument('--epochs', default = 10, type=int, help='epochs')
 
@@ -78,14 +79,21 @@ def train(args):
         save_df(test_label, os.path.join(args.save_data_dir, 'test_label.pkz'))
         save_df(train_data, os.path.join(args.save_data_dir, 'train_data.pkz'))
         save_df(train_label, os.path.join(args.save_data_dir, 'train_label.pkz'))
-        
-
-        
-        
-        
-        
+    
+    image_test_data = []
+    image_train_data = []
+    
+    for te in test_data:
+        if image_test_data == []:
+            image_test_data = create_spectrograms_raw(i)
+        else:
+            image_test_data = np.concatenate((image_test_data, create_spectrograms_raw(te, n_mels=args.image_length)), axis=0)
             
-
+    for tra in train_data:
+        if image_train_data == []:
+            image_train_data = create_spectrograms_raw(tra)
+        else:
+            image_train_data = np.concatenate((image_train_data, create_spectrograms_raw(tra, n_mels=args.image_length)), axis=0)
 
 if __name__ == "__main__":
     train(args)
