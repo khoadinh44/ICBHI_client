@@ -14,7 +14,7 @@ import cmapy
 import nlpaug
 import nlpaug.augmenter.audio as naa
 import torch
-
+import pickle as pkl
 from scipy.signal import butter, lfilter
 
 def slice_data(start, end, raw_data, sample_rate):
@@ -60,3 +60,17 @@ def get_sound_samples(labels_data, annotations, file_name, data_dir, sample_rate
         label_name = get_label(crackles, wheezes)
         labels_data[label_name].append(audio_chunk)
           
+def load_df(pkz_file):
+    with open(pkz_file, 'rb') as f:
+        df=pkl.load(f)
+    return df
+
+def save_df(df, out_file):
+  with open(out_file, 'wb') as pfile:
+    pkl.dump(df, pfile)
+    print('{0} saved'.format(out_file))
+    
+def to_onehot(x, num=4):
+    a = np.zeros((num, ))
+    a[x] = 1
+    return a.tolist()
