@@ -92,4 +92,5 @@ def create_spectrograms_raw(current_window, sample_rate=4000, n_mels=128, f_min=
       img_zer[:, l: l+h] = S
 
     img = np.expand_dims(img_zer, axis=-1)
+    img = np.expand_dims(img, axis=0)
     return img
