@@ -79,6 +79,7 @@ def create_spectrograms_raw(current_window, sample_rate=4000, n_mels=224, f_min=
       S = librosa.feature.melspectrogram(y=current_window, sr=sample_rate, n_mels=n_mels, fmin=f_min, fmax=f_max, n_fft=nfft, hop_length=hop)
       w, h = S.shape
     S = librosa.power_to_db(S, ref=np.max)
+    w, h = S.shape
     img = (S-S.min()) / (S.max() - S.min())
 
     if h < w:  # Padding zeros if height < width
