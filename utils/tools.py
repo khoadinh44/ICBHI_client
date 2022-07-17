@@ -75,7 +75,7 @@ def to_onehot(x, num=4):
     a[x] = 1
     return a.tolist()
 
-def create_spectrograms_raw(current_window, sample_rate=4000, n_mels=128, f_min=50, f_max=4000, nfft=2048, hop=6): # increase hop -> decrease height of image
+def create_spectrograms_raw(current_window, sample_rate=4000, n_mels=224, f_min=50, f_max=4000, nfft=2048, hop=6): # increase hop -> decrease height of image
     S = librosa.feature.melspectrogram(y=current_window, sr=sample_rate, n_mels=n_mels, fmin=f_min, fmax=f_max, n_fft=nfft, hop_length=hop)
     w, h = S.shape
     while h > w:
