@@ -81,7 +81,7 @@ def get_score(hits, counts, pflag=False):
             hits[2]/counts[2], hits[3]/counts[3]))
     
 
-mean, std = get_mean_and_std(image_loader(args.data_dir, args.folds_file, args.test_fold, True, "Params_json", Compose([ToTensor()]), stetho_id=self.args.stetho_id))
+mean, std = get_mean_and_std(image_loader(args.data_dir, args.folds_file, args.test_fold, True, "Params_json", Compose([ToTensor()]), stetho_id=args.stetho_id))
 print("MEAN",  mean, "STD", std)
 
 input_transform = Compose([ToTensor(), Normalize(mean, std)])
