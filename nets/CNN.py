@@ -1,5 +1,6 @@
 import tensorflow as tf
 import keras
+from tensorflow.keras.models import Model
 
 # link Neural Network: https://keras.io/api/applications/
 
@@ -11,7 +12,8 @@ def EfficientNetV2M(image_length=224, training=False):
                                                       classes=4,
                                                       classifier_activation="softmax",
                                                       include_preprocessing=True,)
-  x = base_model(inputs, training=training)
+  output = base_model(inputs, training=training)
+  x = Model(inputs, output)
   return x
 
 def NASNetLarge(image_length=224, training=False):
@@ -22,7 +24,8 @@ def NASNetLarge(image_length=224, training=False):
                                                       classes=4,
                                                       classifier_activation="softmax",
                                                       include_preprocessing=True,)
-  x = base_model(inputs, training=training)
+  output = base_model(inputs, training=training)
+  x = Model(inputs, output)
   return x
 
 def InceptionResNetV2(image_length=224, training=False):
@@ -33,7 +36,8 @@ def InceptionResNetV2(image_length=224, training=False):
                                                       classes=4,
                                                       classifier_activation="softmax",
                                                       include_preprocessing=True,)
-  x = base_model(inputs, training=training)
+  output = base_model(inputs, training=training)
+  x = Model(inputs, output)
   return x
 
 def ResNet152V2(image_length=224, training=False):
@@ -44,6 +48,7 @@ def ResNet152V2(image_length=224, training=False):
                                                       classes=4,
                                                       classifier_activation="softmax",
                                                       include_preprocessing=True,)
-  x = base_model(inputs, training=training)
+  output = base_model(inputs, training=training)
+  x = Model(inputs, output)
   return x
   
