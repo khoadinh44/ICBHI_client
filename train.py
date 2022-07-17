@@ -90,7 +90,7 @@ def train(args):
     p_te.start()
     for idx_te, te in enumerate(test_data):
         p_te.update(idx_te+1)
-        if image_test_data == []:
+        if len(image_test_data) == 0:
             image_test_data = create_spectrograms_raw(te)
         else:
             image_test_data = np.concatenate((image_test_data, create_spectrograms_raw(te, n_mels=args.image_length)), axis=0)
@@ -101,11 +101,14 @@ def train(args):
     p_tra.start()      
     for idx_tra, tra in enumerate(train_data):
         p_tra.update(idx_tra+1)
-        if image_train_data == []:
+        if len(image_train_data) == 0:
             image_train_data = create_spectrograms_raw(tra)
         else:
             image_train_data = np.concatenate((image_train_data, create_spectrograms_raw(tra, n_mels=args.image_length)), axis=0)
     p_tra.finish()
+
+    save_df(image_test_data, os.path.join(args.save_data_dir, 'image_test_data.pkz'))
+    save_df(image_train_data, os.path.join(args.save_data_dir, 'image_train_data.pkz'))
 
     model = EfficientNetV2M(args.image_length, True)
     model.compile(optimizer="Adam", loss='categorical_crossentropy', metrics=['acc', f1_m, precision_m, recall_m]) 
