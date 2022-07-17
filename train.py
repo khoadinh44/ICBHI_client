@@ -20,6 +20,7 @@ parser.add_argument('--lr', default = 1e-3, type=float, help='learning rate')
 parser.add_argument('--image_length', default = 224, type=int, help='height and width of image')
 parser.add_argument('--batch_size', default = 16, type=int, help='bacth size')
 parser.add_argument('--epochs', default = 100, type=int, help='epochs')
+parser.add_argument('--model_name', type=str, help='names of model: EfficientNetV2M, NASNetLarge, InceptionResNetV2, ResNet152V2')
 
 parser.add_argument('--save_data_dir', type=str, help='data directory: x/x/')
 parser.add_argument('--data_dir', type=str, help='data directory: x/x/ICBHI_final_database')
@@ -114,17 +115,26 @@ def train(args):
       save_df(image_test_data, os.path.join(args.save_data_dir, 'image_test_data.pkz'))
       save_df(image_train_data, os.path.join(args.save_data_dir, 'image_train_data.pkz'))
 
-    model = EfficientNetV2M(args.image_length, True)
+    if args.model_name == 'EfficientNetV2M':
+      model = EfficientNetV2M(args.image_length, True)
+    if args.model_name == 'NASNetLarge':
+      model = NASNetLarge(args.image_length, True)
+    if args.model_name == 'InceptionResNetV2':
+      model = InceptionResNetV2(args.image_length, True)
+    if args.model_name == 'ResNet152V2':
+      model = ResNet152V2(args.image_length, True)
+
     model.compile(optimizer="Adam", loss='categorical_crossentropy', metrics=['acc', f1_m, precision_m, recall_m]) 
     model.summary()
     history = model.fit(image_train_data, train_label,
                         epochs     = args.epochs,
                         batch_size = args.batch_size,)
-    model.save(os.path.join(args.model_path, 'model.h5'))
+    name = 'model_' + args.model_name + '.h5'
+    model.save(os.path.join(args.model_path, name))
     
     print('-'*10 + 'Test phase' + '-'*10)
     model = EfficientNetV2M(args.image_length, False)
-    model.load_weights(os.path.join(args.model_path, 'model.h5'))
+    model.load_weights(os.path.join(args.model_path, name))
     _, test_acc,  test_f1_m,  test_precision_m,  test_recall_m  = model.evaluate(image_test_data, test_label, verbose=0)
     test_acc = round(test_acc, 2)
     test_f1_m = round(test_f1_m, 2)
