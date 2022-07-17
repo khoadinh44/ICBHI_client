@@ -35,7 +35,7 @@ def train(args):
         train_data = load_df(os.path.join(args.save_data_dir, 'train_data.pkz'))
         train_label = load_df(os.path.join(args.save_data_dir, 'train_label.pkz'))
     else:
-        print('-'*10 + 'CATAGORIZE DATA' + '-'*10)
+        print('\n' + '-'*10 + 'CATAGORIZE DATA' + '-'*10)
         files_name = []
         for i in os.listdir(args.data_dir):
             tail = i.split('.')[-1]
