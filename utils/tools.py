@@ -7,15 +7,9 @@ import pandas as pd
 
 import matplotlib.pyplot as plt
 import librosa
-import librosa.display
 import cv2
-import cmapy
 
-import nlpaug
-import nlpaug.augmenter.audio as naa
-import torch
 import pickle as pkl
-from scipy.signal import butter, lfilter
 
 def slice_data(start, end, raw_data, sample_rate):
     max_ind = len(raw_data) 
@@ -59,6 +53,7 @@ def get_sound_samples(labels_data, annotations, file_name, data_dir, sample_rate
         audio_chunk = slice_data(start, end, data, rate)
         label_name = get_label(crackles, wheezes)
         labels_data[label_name].append(audio_chunk)
+    return labels_data
           
 def load_df(pkz_file):
     with open(pkz_file, 'rb') as f:
