@@ -90,7 +90,7 @@ def train(args):
     for idx_te, te in enumerate(test_data):
         p_te.progress = idx_te
         if image_test_data == []:
-            image_test_data = create_spectrograms_raw(i)
+            image_test_data = create_spectrograms_raw(te)
         else:
             image_test_data = np.concatenate((image_test_data, create_spectrograms_raw(te, n_mels=args.image_length)), axis=0)
 
