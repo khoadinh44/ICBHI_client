@@ -12,7 +12,7 @@ from nets.CNN import EfficientNetV2M, NASNetLarge, InceptionResNetV2, ResNet152V
 from sklearn.model_selection import train_test_split
 from utils.tools import to_onehot, load_df, create_spectrograms_raw, get_annotations, get_sound_samples
 from sklearn.metrics import confusion_matrix, accuracy_score
-print ("Train import done successfully")
+from IPython.display import ProgressBar
 
 # input argmuments
 parser = argparse.ArgumentParser(description='RespireNet: Lung Sound Classification')
@@ -80,17 +80,24 @@ def train(args):
         save_df(test_label, os.path.join(args.save_data_dir, 'test_label.pkz'))
         save_df(train_data, os.path.join(args.save_data_dir, 'train_data.pkz'))
         save_df(train_label, os.path.join(args.save_data_dir, 'train_label.pkz'))
+        print('\n' + '-'*10 + 'SAVED DATA' + '-'*10)
     
     image_test_data = []
     image_train_data = []
     
-    for te in test_data:
+    print('\n' + 'Convert test data: ...')
+    p_te = ProgressBar(total=len(test_data))
+    for idx_te, te in enumerate(test_data):
+        p_te.progress = idx_te
         if image_test_data == []:
             image_test_data = create_spectrograms_raw(i)
         else:
             image_test_data = np.concatenate((image_test_data, create_spectrograms_raw(te, n_mels=args.image_length)), axis=0)
-            
-    for tra in train_data:
+
+    print('\n' + 'Convert train data: ...')
+    p_tra = ProgressBar(total=len(train_data))       
+    for idx_tra, tra in enumerate(train_data):
+        idx_tra.progress = idx_tra
         if image_train_data == []:
             image_train_data = create_spectrograms_raw(tra)
         else:
