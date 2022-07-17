@@ -5,8 +5,8 @@ import keras
 
 def EfficientNetV2M(image_length=224, training=False):
   inputs = keras.Input(shape=(image_length, image_length, 1))
-  base_model = tf.keras.applications.EfficientNetV2M(include_top=False,
-                                                      weights="imagenet",
+  base_model = tf.keras.applications.EfficientNetV2M(include_top=True,
+                                                      weights=None,
                                                       input_shape=(224, 224, 1),
                                                       classes=4,
                                                       classifier_activation="softmax",
@@ -16,8 +16,8 @@ def EfficientNetV2M(image_length=224, training=False):
 
 def NASNetLarge(image_length=224, training=False):
   inputs = keras.Input(shape=(image_length, image_length, 1))
-  base_model = tf.keras.applications.NASNetLarge(include_top=False,
-                                                      weights="imagenet",
+  base_model = tf.keras.applications.NASNetLarge(include_top=True,
+                                                      weights=None,
                                                       input_shape=(224, 224, 1),
                                                       classes=4,
                                                       classifier_activation="softmax",
@@ -27,8 +27,8 @@ def NASNetLarge(image_length=224, training=False):
 
 def InceptionResNetV2(image_length=224, training=False):
   inputs = keras.Input(shape=(image_length, image_length, 1))
-  base_model = tf.keras.applications.InceptionResNetV2(include_top=False,
-                                                      weights="imagenet",
+  base_model = tf.keras.applications.InceptionResNetV2(include_top=True,
+                                                      weights=None,
                                                       input_shape=(224, 224, 1),
                                                       classes=4,
                                                       classifier_activation="softmax",
@@ -38,8 +38,8 @@ def InceptionResNetV2(image_length=224, training=False):
 
 def ResNet152V2(image_length=224, training=False):
   inputs = keras.Input(shape=(image_length, image_length, 1))
-  base_model = tf.keras.applications.ResNet152V2(include_top=False,
-                                                      weights="imagenet",
+  base_model = tf.keras.applications.ResNet152V2(include_top=True,
+                                                      weights=None,
                                                       input_shape=(224, 224, 1),
                                                       classes=4,
                                                       classifier_activation="softmax",
