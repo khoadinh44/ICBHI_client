@@ -74,3 +74,22 @@ def to_onehot(x, num=4):
     a = np.zeros((num, ))
     a[x] = 1
     return a.tolist()
+
+def create_spectrograms_raw(current_window, sample_rate=4000, n_mels=128, f_min=50, f_max=4000, nfft=2048, hop=6): # increase hop -> decrease height of image
+    S = librosa.feature.melspectrogram(y=current_window, sr=sample_rate, n_mels=n_mels, fmin=f_min, fmax=f_max, n_fft=nfft, hop_length=hop)
+    w, h = S.shape
+    while h > w:
+      hop += 2
+      S = librosa.feature.melspectrogram(y=current_window, sr=sample_rate, n_mels=n_mels, fmin=f_min, fmax=f_max, n_fft=nfft, hop_length=hop)
+      w, h = S.shape
+    S = librosa.power_to_db(S, ref=np.max)
+    img = (S-S.min()) / (S.max() - S.min())
+
+    if h < w:  # Padding zeros if height < width
+      need = w-h
+      l = need//2
+      img_zer = np.zeros((w, w))
+      img_zer[:, l: l+h] = S
+
+    img = np.expand_dims(img_zer, axis=-1)
+    return img
