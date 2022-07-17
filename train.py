@@ -12,7 +12,7 @@ from nets.CNN import EfficientNetV2M, NASNetLarge, InceptionResNetV2, ResNet152V
 from sklearn.model_selection import train_test_split
 from utils.tools import to_onehot, load_df, create_spectrograms_raw, get_annotations, get_sound_samples, save_df
 from sklearn.metrics import confusion_matrix, accuracy_score
-from IPython.display import ProgressBar
+import progressbar
 
 # input argmuments
 parser = argparse.ArgumentParser(description='RespireNet: Lung Sound Classification')
@@ -86,23 +86,27 @@ def train(args):
     image_train_data = []
     
     print('\n' + 'Convert test data: ...')
-    p_te = ProgressBar(total=len(test_data))
+    p_te = progressbar.ProgressBar(maxval=len(test_data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+    p_te.start()
     for idx_te, te in enumerate(test_data):
-        p_te.progress = idx_te
+        p_te.update(idx_te+1)
         if image_test_data == []:
             image_test_data = create_spectrograms_raw(te)
         else:
             image_test_data = np.concatenate((image_test_data, create_spectrograms_raw(te, n_mels=args.image_length)), axis=0)
+    p_te.finish()
 
     print('\n' + 'Convert train data: ...')
-    p_tra = ProgressBar(total=len(train_data))       
+    p_tra = progressbar.ProgressBar(maxval=len(train_data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+    p_tra.start()      
     for idx_tra, tra in enumerate(train_data):
-        idx_tra.progress = idx_tra
+        p_tra.update(idx_tra+1)
         if image_train_data == []:
             image_train_data = create_spectrograms_raw(tra)
         else:
             image_train_data = np.concatenate((image_train_data, create_spectrograms_raw(tra, n_mels=args.image_length)), axis=0)
-            
+    p_tra.finish()
+
     model = EfficientNetV2M(args.image_length, True)
     model.compile(optimizer="Adam", loss='categorical_crossentropy', metrics=['acc', f1_m, precision_m, recall_m]) 
     model.summary()
