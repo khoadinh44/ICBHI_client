@@ -10,7 +10,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from nets.CNN import EfficientNetV2M, NASNetLarge, InceptionResNetV2, ResNet152V2
 from sklearn.model_selection import train_test_split
-from utils.tools import to_onehot, load_df, create_spectrograms_raw
+from utils.tools import to_onehot, load_df, create_spectrograms_raw, get_annotations, get_sound_samples
 from sklearn.metrics import confusion_matrix, accuracy_score
 print ("Train import done successfully")
 
@@ -37,7 +37,7 @@ def train(args):
     else:
         print('-'*10 + 'CATAGORIZE DATA' + '-'*10)
         files_name = []
-        for i in args.data_dir:
+        for i in os.listdir(args.data_dir):
             tail = i.split('.')[-1]
             head = i.split('.')[0]
             if tail == 'wav':
@@ -48,18 +48,18 @@ def train(args):
         for file_name in files_name:
             audio_file = file_name + '.wav'
             txt_file = file_name + '.txt'
-
             annotations = get_annotations(txt_file, args.data_dir)
-            get_sound_samples(labels_data, annotations, audio_file, args.data_dir, sample_rate=4000)
+            labels_data = get_sound_samples(labels_data, annotations, audio_file, args.data_dir, sample_rate=4000)
 
         test_data = []
         test_label = []
         train_data = []
         train_label = []
         for name in labels_data:
-            label = [name]*len(data)
-            all_label = np.array([to_onehot(i) for i in label])
             all_data = labels_data[name]
+            label = [name]*len(all_data)
+            all_label = np.array([to_onehot(i) for i in label])
+            
             X_train, X_test, y_train, y_test = train_test_split(all_data, all_label, test_size=0.2, random_state=42) # 80% for train, 20% for test
 
             if train_data == []:
@@ -112,7 +112,7 @@ def train(args):
     test_f1_m = round(test_f1_m, 2)
     test_precision_m = round(test_precision_m, 2)
     test_recall_m = round(test_recall_m, 2)
-    print(f'\nAccuracy: {} \t f1: {test_f1_m} \t precision: {test_precision_m} \t recall: {test_recall_m}\n')
+    print(f'\nAccuracy: {test_acc} \t f1: {test_f1_m} \t precision: {test_precision_m} \t recall: {test_recall_m}\n')
 
 if __name__ == "__main__":
     train(args)
