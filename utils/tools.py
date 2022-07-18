@@ -119,7 +119,7 @@ def sensitivity(y_true, y_pred):
 
   numerator = 0
   denominator = 0
-  for idx, i in enumerate(y_true):
+  for idx, i in enumerate(y_true.numpy()):
     if i != 0:
       numerator += (y_true[idx]==y_pred[idx])
 
@@ -133,7 +133,7 @@ def specificity(y_true, y_pred):
 
   numerator = 0
   denominator = 0
-  for idx, i in enumerate(y_true):
+  for idx, i in enumerate(y_true.numpy()):
     if i == 0:
       numerator += (y_true[idx]==y_pred[idx])
 
