@@ -29,8 +29,8 @@ parser.add_argument('--model_path', type=str, help='model saving directory')
 
 args = parser.parse_args()
 
-################################MIXUP#####################################
 def train(args):
+    ######################## LOAD DATA ##################################################################
     if os.path.exists(os.path.join(args.save_data_dir, 'test_data.pkz')):
         test_data = load_df(os.path.join(args.save_data_dir, 'test_data.pkz'))
         test_label = load_df(os.path.join(args.save_data_dir, 'test_label.pkz'))
@@ -84,6 +84,7 @@ def train(args):
         save_df(train_label, os.path.join(args.save_data_dir, 'train_label.pkz'))
         print('\n' + '-'*10 + 'SAVED DATA' + '-'*10)
     
+    ######################## PREPROCESSING DATA ##################################################################
     if os.path.join(args.save_data_dir, 'image_test_data.pkz'):
       image_test_data = load_df(os.path.join(args.save_data_dir, 'image_test_data.pkz'))
       image_train_data = load_df(os.path.join(args.save_data_dir, 'image_train_data.pkz'))
@@ -115,7 +116,8 @@ def train(args):
 
       save_df(image_test_data, os.path.join(args.save_data_dir, 'image_test_data.pkz'))
       save_df(image_train_data, os.path.join(args.save_data_dir, 'image_train_data.pkz'))
-
+    
+    ######################## TRAIN PHASE ##################################################################
     if args.model_name == 'EfficientNetV2M':
       model = EfficientNetV2M(args.image_length, True)
     if args.model_name == 'NASNetLarge':
@@ -133,8 +135,17 @@ def train(args):
     name = 'model_' + args.model_name + '.h5'
     model.save(os.path.join(args.model_path, name))
     
-    print('\n' + '-'*10 + 'Test phase' + '-'*10 + '\n')
-    model = EfficientNetV2M(args.image_length, False)
+    ######################## TEST PHASE ##################################################################
+    print('\n' + '-'*10 + 'Test phase' + '-'*10 + '\n') 
+    if args.model_name == 'EfficientNetV2M':
+      model = EfficientNetV2M(args.image_length, True)
+    if args.model_name == 'NASNetLarge':
+      model = NASNetLarge(args.image_length, True)
+    if args.model_name == 'InceptionResNetV2':
+      model = InceptionResNetV2(args.image_length, True)
+    if args.model_name == 'ResNet152V2':
+      model = ResNet152V2(args.image_length, True)
+    
     model.compile(optimizer="Adam", loss='categorical_crossentropy', metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
     model.load_weights(os.path.join(args.model_path, name))
     _, test_acc,  test_sensitivity,  test_specificity,  test_average_score, test_harmonic_mean  = model.evaluate(image_test_data, test_label, verbose=0)
