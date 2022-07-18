@@ -126,7 +126,7 @@ def sensitivity(y_true, y_pred):
     idx += 1
 
   numerator = tf.cast(numerator, tf.float32)
-  if tf.where(y_true!=0.).shape[0] == None:
+  if tf.where(y_true!=0.).shape[1] == 0:
     return 0.
   denominator = tf.cast(tf.where(y_true!=0.).shape[0], tf.float32)
   return numerator/denominator
@@ -144,7 +144,7 @@ def specificity(y_true, y_pred):
     idx += 1
 
   numerator = tf.cast(numerator, tf.float32)
-  if tf.where(y_true==0.).shape[0] == None:
+  if tf.where(y_true==0.).shape[1] == 0:
     return 0.
   denominator = tf.cast(tf.where(y_true==0.).shape[0], tf.float32)
   return numerator/denominator
