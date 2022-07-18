@@ -114,35 +114,35 @@ def f1_m(y_true, y_pred):
 
 # MATRICES=================================================================================
 def sensitivity(y_true, y_pred):
-  y_pred = tf.math.argmax(y_pred)
-  y_true = tf.math.argmax(y_true)
+  y_pred = tf.cast(tf.math.argmax(y_pred), dtype=tf.float32)
+  y_true = tf.cast(tf.math.argmax(y_true), dtype=tf.float32)
 
-  numerator = 0
-  denominator = 0
+  numerator = 0.
+  denominator = 0.
   idx = 0
   for i in y_true:
-    if i != 0:
-      numerator += (y_true[idx]==y_pred[idx])
+    if i != 0.:
+      numerator += tf.cast(y_true[idx]==y_pred[idx], tf.float32)
     idx += 1
 
   numerator = tf.cast(numerator, tf.float32)
-  denominator = tf.cast(len(np.where(y_true != 0)[0]), tf.float32)
+  denominator = tf.cast(tf.where(a!=0).shape[0], tf.float32)
   return numerator/denominator
 
 def specificity(y_true, y_pred):
-  y_pred = tf.math.argmax(y_pred)
-  y_true = tf.math.argmax(y_true)
+  y_pred = tf.cast(tf.math.argmax(y_pred), dtype=tf.float32)
+  y_true = tf.cast(tf.math.argmax(y_true), dtype=tf.float32)
 
-  numerator = 0
-  denominator = 0
+  numerator = 0.
+  denominator = 0.
   idx = 0
   for i in y_true:
-    if i == 0:
-      numerator += (y_true[idx]==y_pred[idx])
+    if i == 0.:
+      numerator += tf.cast(y_true[idx]==y_pred[idx], tf.float32)
     idx += 1
 
   numerator = tf.cast(numerator, tf.float32)
-  denominator = tf.cast(len(np.where(y_true == 0)[0]), tf.float32)
+  denominator = tf.cast(tf.where(a==0).shape[0], tf.float32)
   return numerator/denominator
 
 def average_score(y_true, y_pred):
