@@ -5,12 +5,13 @@ import random
 from tqdm import tqdm
 import numpy as np
 import pandas as pd
+import tensorflow as tf
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from nets.CNN import EfficientNetV2M, NASNetLarge, InceptionResNetV2, ResNet152V2
 from sklearn.model_selection import train_test_split
-from utils.tools import to_onehot, load_df, create_spectrograms_raw, get_annotations, get_sound_samples, save_df, f1_m, precision_m, recall_m
+from utils.tools import to_onehot, load_df, create_spectrograms_raw, get_annotations, get_sound_samples, save_df, sensitivity, specificity, average_score, harmonic_mean
 from sklearn.metrics import confusion_matrix, accuracy_score
 import progressbar
 
@@ -124,7 +125,7 @@ def train(args):
     if args.model_name == 'ResNet152V2':
       model = ResNet152V2(args.image_length, True)
 
-    model.compile(optimizer="Adam", loss='categorical_crossentropy', metrics=['acc', f1_m, precision_m, recall_m]) 
+    model.compile(optimizer="Adam", loss='categorical_crossentropy', metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
     model.summary()
     history = model.fit(image_train_data, train_label,
                         epochs     = args.epochs,
@@ -134,7 +135,7 @@ def train(args):
     
     print('\n' + '-'*10 + 'Test phase' + '-'*10 + '\n')
     model = EfficientNetV2M(args.image_length, False)
-    model.compile(optimizer="Adam", loss='categorical_crossentropy', metrics=['acc', f1_m, precision_m, recall_m]) 
+    model.compile(optimizer="Adam", loss='categorical_crossentropy', metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
     model.load_weights(os.path.join(args.model_path, name))
     _, test_acc,  test_f1_m,  test_precision_m,  test_recall_m  = model.evaluate(image_test_data, test_label, verbose=0)
     test_acc = round(test_acc, 2)
