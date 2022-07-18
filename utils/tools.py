@@ -18,6 +18,7 @@ def slice_data(start, end, raw_data, sample_rate):
     end_ind = min(int(end * sample_rate), max_ind)
     return raw_data[start_ind: end_ind]
 
+# [normal, crackle, wheeze, both] == [0, 1, 2, 3]
 def get_label(crackle, wheeze):
     if crackle == 0 and wheeze == 0:
         return 0
