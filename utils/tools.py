@@ -119,9 +119,11 @@ def sensitivity(y_true, y_pred):
 
   numerator = 0
   denominator = 0
-  for idx, i in enumerate(tf.make_ndarray(y_true)):
+  idx = 0
+  for i in y_true:
     if i != 0:
       numerator += (y_true[idx]==y_pred[idx])
+    idx += 1
 
   numerator = tf.cast(numerator, tf.float32)
   denominator = tf.cast(len(np.where(y_true != 0)[0]), tf.float32)
@@ -133,9 +135,11 @@ def specificity(y_true, y_pred):
 
   numerator = 0
   denominator = 0
-  for idx, i in enumerate(tf.make_ndarray(y_true)):
+  idx = 0
+  for i in y_true:
     if i == 0:
       numerator += (y_true[idx]==y_pred[idx])
+    idx += 1
 
   numerator = tf.cast(numerator, tf.float32)
   denominator = tf.cast(len(np.where(y_true == 0)[0]), tf.float32)
