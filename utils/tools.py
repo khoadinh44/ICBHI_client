@@ -111,3 +111,42 @@ def f1_m(y_true, y_pred):
     precision = precision_m(y_true, y_pred)
     recall = recall_m(y_true, y_pred)
     return 2*((precision*recall)/(precision+recall+K.epsilon()))
+
+# MATRICES=================================================================================
+def sensitivity(y_true, y_pred):
+  y_pred = tf.math.argmax(y_pred)
+  y_true = tf.math.argmax(y_true)
+
+  numerator = 0
+  denominator = 0
+  for idx, i in enumerate(y_true):
+    if i != 0:
+      numerator += (y_true[idx]==y_pred[idx])
+
+  numerator = tf.cast(numerator, tf.float32)
+  denominator = tf.cast(len(np.where(y_true != 0)[0]), tf.float32)
+  return numerator/denominator
+
+def specificity(y_true, y_pred):
+  y_pred = tf.math.argmax(y_pred)
+  y_true = tf.math.argmax(y_true)
+
+  numerator = 0
+  denominator = 0
+  for idx, i in enumerate(y_true):
+    if i == 0:
+      numerator += (y_true[idx]==y_pred[idx])
+
+  numerator = tf.cast(numerator, tf.float32)
+  denominator = tf.cast(len(np.where(y_true == 0)[0]), tf.float32)
+  return numerator/denominator
+
+def average_score(y_true, y_pred):
+  se = sensitivity(y_true, y_pred)
+  sp = specificity(y_true, y_pred)
+  return (se + sp)/2
+
+def harmonic_mean(y_true, y_pred):
+  se = sensitivity(y_true, y_pred)
+  sp = specificity(y_true, y_pred)
+  return (2*se*sp)/(se + sp)
