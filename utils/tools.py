@@ -157,4 +157,6 @@ def average_score(y_true, y_pred):
 def harmonic_mean(y_true, y_pred):
   se = sensitivity(y_true, y_pred)
   sp = specificity(y_true, y_pred)
+  if se + sp == 0.:
+    return 0.
   return (2*se*sp)/(se + sp)
