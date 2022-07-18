@@ -132,8 +132,9 @@ def train(args):
     name = 'model_' + args.model_name + '.h5'
     model.save(os.path.join(args.model_path, name))
     
-    print('-'*10 + 'Test phase' + '-'*10)
+    print('\n' + '-'*10 + 'Test phase' + '-'*10 + '\n')
     model = EfficientNetV2M(args.image_length, False)
+    model.compile(optimizer="Adam", loss='categorical_crossentropy', metrics=['acc', f1_m, precision_m, recall_m]) 
     model.load_weights(os.path.join(args.model_path, name))
     _, test_acc,  test_f1_m,  test_precision_m,  test_recall_m  = model.evaluate(image_test_data, test_label, verbose=0)
     test_acc = round(test_acc, 2)
