@@ -15,9 +15,9 @@ def EfficientNetV2M(image_length=224, training=False):
   x = Model(inputs, output)
   return x
 
-def NASNetLarge(image_length=224, training=False):
+def DenseNet201(image_length=224, training=False):
   inputs = keras.Input(shape=(image_length, image_length, 1))
-  base_model = tf.keras.applications.nasnet.NASNetLarge(include_top=True,
+  base_model = tf.keras.applications.DenseNet201(include_top=True,
                                                       weights=None,
                                                       input_shape=(224, 224, 1),
                                                       classes=4,
