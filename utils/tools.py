@@ -8,6 +8,8 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import librosa
 import cv2
+from sklearn.metrics import confusion_matrix, accuracy_score
+
 
 import pickle as pkl
 from keras import backend as K
@@ -172,3 +174,11 @@ def harmonic_mean(y_true, y_pred):
   if se + sp == 0.:
     return 0.
   return (2*se*sp)/(se + sp)
+
+def matrices(y_true, y_pred):
+    acc = accuracy_score(y_true, y_pred)
+    SE = sensitivity(y_true, y_pred)
+    SP = specificity(y_true, y_pred)
+    AS = average_score(y_true, y_pred)
+    HS = harmonic_mean(y_true, y_pred)
+    return acc, SE, SP, AS, HS
