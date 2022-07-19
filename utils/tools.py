@@ -127,7 +127,7 @@ def f1_m(y_true, y_pred):
     return 2*((precision*recall)/(precision+recall+K.epsilon()))
 
 # MATRICES=================================================================================
-def sensitivity(y_true, y_pred):
+def sensitivity(y_true, y_pred, test=False):
   y_pred = tf.cast(tf.math.argmax(y_pred, axis=-1), dtype=tf.float32)
   y_true = tf.cast(tf.math.argmax(y_true, axis=-1), dtype=tf.float32)
 
@@ -142,10 +142,14 @@ def sensitivity(y_true, y_pred):
   numerator = tf.cast(numerator, tf.float32)
   if tf.where(y_true!=0.).shape[1] == None:
     return 0.
-  denominator = tf.cast(tf.squeeze(tf.where(y_true!=0.)).shape[0], tf.float32)
+  if test:
+    denominator = tf.cast(tf.squeeze(tf.where(y_true!=0.)).shape[0], tf.float32)
+  else:
+    if tf.where(y_true!=0.).shape[1]:
+      denominator = tf.cast(tf.where(y_true!=0.).shape[1], tf.float32)
   return numerator/denominator
 
-def specificity(y_true, y_pred):
+def specificity(y_true, y_pred, test=False):
   y_pred = tf.cast(tf.math.argmax(y_pred, axis=-1), dtype=tf.float32)
   y_true = tf.cast(tf.math.argmax(y_true, axis=-1), dtype=tf.float32)
 
@@ -160,26 +164,30 @@ def specificity(y_true, y_pred):
   numerator = tf.cast(numerator, tf.float32)
   if tf.where(y_true==0.).shape[1] == None:
     return 0.
-  denominator = tf.cast(tf.squeeze(tf.where(y_true==0.)).shape[0], tf.float32)
+  if test:
+    denominator = tf.cast(tf.squeeze(tf.where(y_true==0.)).shape[0], tf.float32)
+  else:
+    if tf.where(y_true==0.).shape[1]:
+      denominator = tf.cast(tf.where(y_true==0.).shape[1], tf.float32)
   return numerator/denominator
 
-def average_score(y_true, y_pred):
-  se = sensitivity(y_true, y_pred)
-  sp = specificity(y_true, y_pred)
+def average_score(y_true, y_pred, test=False):
+  se = sensitivity(y_true, y_pred, test=test)
+  sp = specificity(y_true, y_pred, test=test)
   return (se + sp)/2
 
-def harmonic_mean(y_true, y_pred):
-  se = sensitivity(y_true, y_pred)
-  sp = specificity(y_true, y_pred)
+def harmonic_mean(y_true, y_pred, test=False):
+  se = sensitivity(y_true, y_pred, test=test)
+  sp = specificity(y_true, y_pred, test=test)
   if se + sp == 0.:
     return 0.
   return (2*se*sp)/(se + sp)
 
 def matrices(y_true, y_pred):
-    SE = sensitivity(y_true, y_pred)
-    SP = specificity(y_true, y_pred)
-    AS = average_score(y_true, y_pred)
-    HS = harmonic_mean(y_true, y_pred)
+    SE = sensitivity(y_true, y_pred, True)
+    SP = specificity(y_true, y_pred, True)
+    AS = average_score(y_true, y_pred, True)
+    HS = harmonic_mean(y_true, y_pred, True)
     y_pred = tf.cast(tf.math.argmax(y_pred, axis=-1), dtype=tf.float32)
     y_true = tf.cast(tf.math.argmax(y_true, axis=-1), dtype=tf.float32)
     acc = accuracy_score(y_true, y_pred)
