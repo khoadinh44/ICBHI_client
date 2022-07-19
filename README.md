@@ -14,6 +14,6 @@ model_path: - For example (should be): /data/'model_'model_name'.h5
             - Description: Path to the saved weight
             
 ## Run train.py
-          - %cd /ICBHI_client
-          - !python train.py --data_dir /data/ICBHI_final_database --save_data_dir /data/ --model_path /data/ --model_name EfficientNetV2M 
+          %cd /ICBHI_client
+          !python train.py --data_dir /data/ICBHI_final_database --save_data_dir /data/ --model_path /data/ --model_name EfficientNetV2M 
                
