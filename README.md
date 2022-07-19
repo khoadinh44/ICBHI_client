@@ -4,13 +4,15 @@ Preprocess:  Mel spectrogram
 CNN type: EfficientNetV2M, MobileNetV2, InceptionResNetV2, ResNet152V2
 
 ## Important imformation in ArgumentParser of train.py:
-data_dir: - For example (should be): /data/ICBHI_final_database
+Unzip sound folder and put it to data folder
+
+data_dir: - For example (should be): /data/sound/ICBHI_final_database
           - Description: Path to the original data.
           
-save_data_dir: - For example (should be): /data/
+save_data_dir: - For example (should be): /data/sound
                - Description: Path to the saved preprocessing data.
                
-model_path: - For example (should be): /data/'model_'model_name'.h5
+model_path: - For example (should be): /data/sound/'model_'model_name'.h5
             - Description: Path to the saved weight
             
 train: - True or False
