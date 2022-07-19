@@ -1,3 +1,15 @@
 # ICBHI_client: 4 algorithm CNNs for ICBHI 2017 dataset
-Preprocess:  Mel spectrogram\\
+Preprocess:  Mel spectrogram
+
 CNN type: EfficientNetV2M, MobileNetV2, InceptionResNetV2, ResNet152V2
+
+## Important imformation in ArgumentParser of train.py:
+data_dir: - For example (should be): /x/x/ICBHI_final_database
+          - Description: Path to the original data.
+          
+save_data_dir: - For example (should be): /x/x/
+               - Description: Path to the saved preprocessing data.
+               
+model_path: - For example (should be): /x/x/'model_'model_name'.h5
+            - Description: Path to the saved weight
+               
