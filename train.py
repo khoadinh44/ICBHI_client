@@ -9,7 +9,7 @@ import tensorflow as tf
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from nets.CNN import EfficientNetV2M, NASNetLarge, InceptionResNetV2, ResNet152V2
+from nets.CNN import EfficientNetV2M, DenseNet201, InceptionResNetV2, ResNet152V2
 from sklearn.model_selection import train_test_split
 from utils.tools import to_onehot, load_df, create_spectrograms_raw, get_annotations, get_sound_samples, save_df, sensitivity, specificity, average_score, harmonic_mean
 from sklearn.metrics import confusion_matrix, accuracy_score
@@ -21,7 +21,7 @@ parser.add_argument('--lr', default = 1e-3, type=float, help='learning rate')
 parser.add_argument('--image_length', default = 224, type=int, help='height and width of image')
 parser.add_argument('--batch_size', default = 16, type=int, help='bacth size')
 parser.add_argument('--epochs', default = 100, type=int, help='epochs')
-parser.add_argument('--model_name', type=str, help='names of model: EfficientNetV2M, NASNetLarge, InceptionResNetV2, ResNet152V2')
+parser.add_argument('--model_name', type=str, help='names of model: EfficientNetV2M, DenseNet201, InceptionResNetV2, ResNet152V2')
 
 parser.add_argument('--save_data_dir', type=str, help='data directory: x/x/')
 parser.add_argument('--data_dir', type=str, help='data directory: x/x/ICBHI_final_database')
@@ -86,8 +86,8 @@ def train(args):
     
     ######################## PREPROCESSING DATA ##################################################################
     if os.path.join(args.save_data_dir, 'image_test_data.pkz'):
-      image_test_data = load_df(os.path.join(args.save_data_dir, 'image_test_data.pkz'))
-      image_train_data = load_df(os.path.join(args.save_data_dir, 'image_train_data.pkz'))
+      image_test_data = load_df(os.path.join(args.save_data_dir, 'mel_test_data.pkz'))
+      image_train_data = load_df(os.path.join(args.save_data_dir, 'mel_train_data.pkz'))
     else:
       image_test_data = []
       image_train_data = []
@@ -114,14 +114,14 @@ def train(args):
               image_train_data = np.concatenate((image_train_data, create_spectrograms_raw(tra, n_mels=args.image_length)), axis=0)
       p_tra.finish()
 
-      save_df(image_test_data, os.path.join(args.save_data_dir, 'image_test_data.pkz'))
-      save_df(image_train_data, os.path.join(args.save_data_dir, 'image_train_data.pkz'))
+      save_df(image_test_data, os.path.join(args.save_data_dir, 'mel_test_data.pkz'))
+      save_df(image_train_data, os.path.join(args.save_data_dir, 'mel_train_data.pkz'))
     
     ######################## TRAIN PHASE ##################################################################
     if args.model_name == 'EfficientNetV2M':
       model = EfficientNetV2M(args.image_length, True)
-    if args.model_name == 'NASNetLarge':
-      model = NASNetLarge(args.image_length, True)
+    if args.model_name == 'DenseNet201':
+      model = DenseNet201(args.image_length, True)
     if args.model_name == 'InceptionResNetV2':
       model = InceptionResNetV2(args.image_length, True)
     if args.model_name == 'ResNet152V2':
@@ -139,8 +139,8 @@ def train(args):
     print('\n' + '-'*10 + 'Test phase' + '-'*10 + '\n') 
     if args.model_name == 'EfficientNetV2M':
       model = EfficientNetV2M(args.image_length, True)
-    if args.model_name == 'NASNetLarge':
-      model = NASNetLarge(args.image_length, True)
+    if args.model_name == 'DenseNet201':
+      model = DenseNet201(args.image_length, True)
     if args.model_name == 'InceptionResNetV2':
       model = InceptionResNetV2(args.image_length, True)
     if args.model_name == 'ResNet152V2':
