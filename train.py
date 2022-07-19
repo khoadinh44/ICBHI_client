@@ -28,6 +28,8 @@ parser.add_argument('--save_data_dir', type=str, help='data directory: x/x/')
 parser.add_argument('--data_dir', type=str, help='data directory: x/x/ICBHI_final_database')
 parser.add_argument('--model_path', type=str, help='model saving directory')
 
+parser.add_argument('--train', type=bool, default=False, help='train mode')
+parser.add_argument('--predict', type=bool, default=False, help='predict mode')
 args = parser.parse_args()
 
 def train(args):
@@ -132,10 +134,11 @@ def train(args):
       model.load_weights(os.path.join(args.model_path, name))
     model.compile(optimizer="Adam", loss='categorical_crossentropy', metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
     model.summary()
-    history = model.fit(image_train_data, train_label,
-                        epochs     = args.epochs,
-                        batch_size = args.batch_size,)
-    model.save(os.path.join(args.model_path, name))
+    if args.train:
+        history = model.fit(image_train_data, train_label,
+                            epochs     = args.epochs,
+                            batch_size = args.batch_size,)
+        model.save(os.path.join(args.model_path, name))
     
     ######################## TEST PHASE ##################################################################
     print('\n' + '-'*10 + 'Test phase' + '-'*10 + '\n') 
@@ -148,15 +151,17 @@ def train(args):
     if args.model_name == 'ResNet152V2':
       model = ResNet152V2(args.image_length, True)
     
-    model.compile(optimizer="Adam", loss='categorical_crossentropy', metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
-    model.load_weights(os.path.join(args.model_path, name))
-    _, test_acc,  test_sensitivity,  test_specificity,  test_average_score, test_harmonic_mean  = model.evaluate(image_test_data, test_label, verbose=0)
-    test_acc = round(test_acc*100, 2)
-    test_sensitivity = round(test_sensitivity*100, 2)
-    test_specificity = round(test_specificity*100, 2)
-    test_average_score = round(test_average_score*100, 2)
-    test_harmonic_mean = round(test_harmonic_mean*100, 2)
-    print(f'\nAccuracy: {test_acc} \t SE: {test_sensitivity} \t SP: {test_specificity} \t AS: {test_average_score} \t HS: {test_harmonic_mean}\n')
+    if args.predict:
+        model.load_weights(os.path.join(args.model_path, name))
+#         _, test_acc,  test_sensitivity,  test_specificity,  test_average_score, test_harmonic_mean  = model.evaluate(image_test_data, test_label, verbose=0)
+        pred_label = model.predict(image_test_data)
+        test_acc,  test_sensitivity,  test_specificity,  test_average_score, test_harmonic_mean  = matrices(test_label, pred_label)
+        test_acc = round(test_acc*100, 2)
+        test_sensitivity = round(test_sensitivity*100, 2)
+        test_specificity = round(test_specificity*100, 2)
+        test_average_score = round(test_average_score*100, 2)
+        test_harmonic_mean = round(test_harmonic_mean*100, 2)
+        print(f'\nAccuracy: {test_acc} \t SE: {test_sensitivity} \t SP: {test_specificity} \t AS: {test_average_score} \t HS: {test_harmonic_mean}\n')
 
 if __name__ == "__main__":
     train(args)
