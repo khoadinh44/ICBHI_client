@@ -176,9 +176,11 @@ def harmonic_mean(y_true, y_pred):
   return (2*se*sp)/(se + sp)
 
 def matrices(y_true, y_pred):
-    acc = accuracy_score(y_true, y_pred)
     SE = sensitivity(y_true, y_pred)
     SP = specificity(y_true, y_pred)
     AS = average_score(y_true, y_pred)
     HS = harmonic_mean(y_true, y_pred)
+    y_pred = tf.cast(tf.math.argmax(y_pred), dtype=tf.float32)
+    y_true = tf.cast(tf.math.argmax(y_true), dtype=tf.float32)
+    acc = accuracy_score(y_true, y_pred)
     return acc, SE, SP, AS, HS
