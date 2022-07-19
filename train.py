@@ -21,6 +21,7 @@ parser.add_argument('--lr', default = 1e-3, type=float, help='learning rate')
 parser.add_argument('--image_length', default = 224, type=int, help='height and width of image')
 parser.add_argument('--batch_size', default = 16, type=int, help='bacth size')
 parser.add_argument('--epochs', default = 100, type=int, help='epochs')
+parser.add_argument('--load_weight', default = True, type=bool, help='load weight')
 parser.add_argument('--model_name', type=str, help='names of model: EfficientNetV2M, MobileNetV2, InceptionResNetV2, ResNet152V2')
 
 parser.add_argument('--save_data_dir', type=str, help='data directory: x/x/')
@@ -126,13 +127,14 @@ def train(args):
       model = InceptionResNetV2(args.image_length, True)
     if args.model_name == 'ResNet152V2':
       model = ResNet152V2(args.image_length, True)
-
+    name = 'model_' + args.model_name + '.h5'
+    if args.load_weight:
+      model.load_weights(os.path.join(args.model_path, name))
     model.compile(optimizer="Adam", loss='categorical_crossentropy', metrics=['acc', sensitivity, specificity, average_score, harmonic_mean]) 
     model.summary()
     history = model.fit(image_train_data, train_label,
                         epochs     = args.epochs,
                         batch_size = args.batch_size,)
-    name = 'model_' + args.model_name + '.h5'
     model.save(os.path.join(args.model_path, name))
     
     ######################## TEST PHASE ##################################################################
