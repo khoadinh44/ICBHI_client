@@ -183,5 +183,4 @@ def matrices(y_true, y_pred):
     y_pred = tf.cast(tf.math.argmax(y_pred), dtype=tf.float32)
     y_true = tf.cast(tf.math.argmax(y_true), dtype=tf.float32)
     acc = accuracy_score(y_true, y_pred)
-    print(acc, SE, SP, AS, HS)
     return acc, SE.numpy(), SP.numpy(), AS.numpy(), HS
