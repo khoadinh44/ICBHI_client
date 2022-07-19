@@ -95,6 +95,18 @@ def create_spectrograms_raw(current_window, sample_rate=4000, n_mels=224, f_min=
     img = np.expand_dims(img, axis=0)
     return img
 
+def accuracy_m(y_true, y_pred):
+  correct = 0
+  total = 0
+  for i in range(len(y_true)):
+      act_label = np.argmax(y_true[i]) # act_label = 1 (index)
+      pred_label = np.argmax(y_pred[i]) # pred_label = 1 (index)
+      if(act_label == pred_label):
+          correct += 1
+      total += 1
+  accuracy = (correct/total)
+  return accuracy
+
 def recall_m(y_true, y_pred):
     true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
     possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
