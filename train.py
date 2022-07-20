@@ -30,6 +30,8 @@ parser.add_argument('--model_path', type=str, help='model saving directory')
 
 parser.add_argument('--train', type=bool, default=False, help='train mode')
 parser.add_argument('--predict', type=bool, default=False, help='predict mode')
+
+parser.add_argument('--based_image', type=str, default='mel', help='stft, mel')
 args = parser.parse_args()
 
 def train(args):
@@ -88,38 +90,72 @@ def train(args):
         print('\n' + '-'*10 + 'SAVED DATA' + '-'*10)
     
     ######################## PREPROCESSING DATA ##################################################################
-    if os.path.join(args.save_data_dir, 'image_test_data.pkz'):
-      image_test_data = load_df(os.path.join(args.save_data_dir, 'mel_test_data.pkz'))
-      image_train_data = load_df(os.path.join(args.save_data_dir, 'mel_train_data.pkz'))
-    else:
-      image_test_data = []
-      image_train_data = []
-      
-      print('\n' + 'Convert test data: ...')
-      p_te = progressbar.ProgressBar(maxval=len(test_data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
-      p_te.start()
-      for idx_te, te in enumerate(test_data):
-          p_te.update(idx_te+1)
-          if len(image_test_data) == 0:
-              image_test_data = create_spectrograms_raw(te)
-          else:
-              image_test_data = np.concatenate((image_test_data, create_spectrograms_raw(te, n_mels=args.image_length)), axis=0)
-      p_te.finish()
+    if args.based_image == 'mel':
+        if os.path.join(args.save_data_dir, 'mel_test_data.pkz'):
+          image_test_data = load_df(os.path.join(args.save_data_dir, 'mel_test_data.pkz'))
+          image_train_data = load_df(os.path.join(args.save_data_dir, 'mel_train_data.pkz'))
+        else:
+          image_test_data = []
+          image_train_data = []
 
-      print('\n' + 'Convert train data: ...')
-      p_tra = progressbar.ProgressBar(maxval=len(train_data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
-      p_tra.start()      
-      for idx_tra, tra in enumerate(train_data):
-          p_tra.update(idx_tra+1)
-          if len(image_train_data) == 0:
-              image_train_data = create_spectrograms_raw(tra)
-          else:
-              image_train_data = np.concatenate((image_train_data, create_spectrograms_raw(tra, n_mels=args.image_length)), axis=0)
-      p_tra.finish()
+          print('\n' + 'Convert test data: ...')
+          p_te = progressbar.ProgressBar(maxval=len(test_data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+          p_te.start()
+          for idx_te, te in enumerate(test_data):
+              p_te.update(idx_te+1)
+              if len(image_test_data) == 0:
+                  image_test_data = create_spectrograms_raw(te, n_mels=args.image_length)
+              else:
+                  image_test_data = np.concatenate((image_test_data, create_spectrograms_raw(te, n_mels=args.image_length)), axis=0)
+          p_te.finish()
 
-      save_df(image_test_data, os.path.join(args.save_data_dir, 'mel_test_data.pkz'))
-      save_df(image_train_data, os.path.join(args.save_data_dir, 'mel_train_data.pkz'))
+          print('\n' + 'Convert train data: ...')
+          p_tra = progressbar.ProgressBar(maxval=len(train_data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+          p_tra.start()      
+          for idx_tra, tra in enumerate(train_data):
+              p_tra.update(idx_tra+1)
+              if len(image_train_data) == 0:
+                  image_train_data = create_spectrograms_raw(tra, n_mels=args.image_length)
+              else:
+                  image_train_data = np.concatenate((image_train_data, create_spectrograms_raw(tra, n_mels=args.image_length)), axis=0)
+          p_tra.finish()
+
+          save_df(image_test_data, os.path.join(args.save_data_dir, 'mel_test_data.pkz'))
+          save_df(image_train_data, os.path.join(args.save_data_dir, 'mel_train_data.pkz'))
     
+    if args.based_image == 'stft':
+        if os.path.join(args.save_data_dir, 'stft_test_data.pkz'):
+          image_test_data = load_df(os.path.join(args.save_data_dir, 'stft_test_data.pkz'))
+          image_train_data = load_df(os.path.join(args.save_data_dir, 'stft_train_data.pkz'))
+        else:
+          image_test_data = []
+          image_train_data = []
+
+          print('\n' + 'Convert test data: ...')
+          p_te = progressbar.ProgressBar(maxval=len(test_data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+          p_te.start()
+          for idx_te, te in enumerate(test_data):
+              p_te.update(idx_te+1)
+              if len(image_test_data) == 0:
+                  image_test_data = create_stft(te)
+              else:
+                  image_test_data = np.concatenate((image_test_data, create_stft(te)), axis=0)
+          p_te.finish()
+
+          print('\n' + 'Convert train data: ...')
+          p_tra = progressbar.ProgressBar(maxval=len(train_data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+          p_tra.start()      
+          for idx_tra, tra in enumerate(train_data):
+              p_tra.update(idx_tra+1)
+              if len(image_train_data) == 0:
+                  image_train_data = create_stft(tra)
+              else:
+                  image_train_data = np.concatenate((image_train_data, create_stft(tra)), axis=0)
+          p_tra.finish()
+
+          save_df(image_test_data, os.path.join(args.save_data_dir, 'stft_test_data.pkz'))
+          save_df(image_train_data, os.path.join(args.save_data_dir, 'stft_train_data.pkz'))
+
     ######################## TRAIN PHASE ##################################################################
     if args.model_name == 'EfficientNetV2M':
       model = EfficientNetV2M(args.image_length, True)
