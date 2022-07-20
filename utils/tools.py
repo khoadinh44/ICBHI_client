@@ -94,8 +94,9 @@ def create_stft(current_window, frame_length=255, frame_step=100, fft_length=224
       l = need//2
       img_zer = np.zeros((h, h))
       img_zer[l: l+w, :] = S
-      img = img_zer[:fft_length//2, :fft_length//2]
+      img = img_zer
 
+    img = img[:fft_length//2, :fft_length//2]
     img = np.expand_dims(img, axis=-1)
     return img
 
