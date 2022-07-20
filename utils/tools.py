@@ -10,7 +10,6 @@ import librosa
 import cv2
 from sklearn.metrics import confusion_matrix, accuracy_score
 
-
 import pickle as pkl
 from keras import backend as K
 
@@ -98,6 +97,7 @@ def create_stft(current_window, frame_length=255, frame_step=100, fft_length=224
 
     img = img[:fft_length//2, :fft_length//2]
     img = np.expand_dims(img, axis=-1)
+    img = np.expand_dims(img, axis=0)
     return img
 
 def create_spectrograms_raw(current_window, sample_rate=4000, n_mels=224, f_min=50, f_max=4000, nfft=2048, hop=6): # increase hop -> decrease height of image
