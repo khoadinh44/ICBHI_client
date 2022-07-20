@@ -82,7 +82,6 @@ def create_stft(current_window, frame_length=255, frame_step=100, fft_length=224
       frame_step -= 2
       S = tf.signal.stft(current_window, frame_length=frame_length, frame_step=frame_step, fft_length=fft_length)
       w, h = S.shape
-      print(w, h)
 
     frame_step += 2
     S = tf.signal.stft(current_window, frame_length=frame_length, frame_step=frame_step, fft_length=fft_length)
