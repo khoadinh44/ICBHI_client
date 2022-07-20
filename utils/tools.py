@@ -74,6 +74,32 @@ def to_onehot(x, num=4):
     a[x] = 1
     return a.tolist()
 
+def create_stft(current_window, frame_length=255, frame_step=100, fft_length=224*2): # increase hop -> decrease height of image
+    S = tf.signal.stft(current_window, frame_length=frame_length, frame_step=frame_step, fft_length=fft_length)
+    w, h = S.shape
+    frame_step = frame_step
+    while h > w:
+      frame_step -= 2
+      S = tf.signal.stft(current_window, frame_length=frame_length, frame_step=frame_step, fft_length=fft_length)
+      w, h = S.shape
+      print(w, h)
+
+    frame_step += 2
+    S = tf.signal.stft(current_window, frame_length=frame_length, frame_step=frame_step, fft_length=fft_length)
+    S = librosa.power_to_db(S, ref=np.max)
+    w, h = S.shape
+    img = (S-S.min()) / (S.max() - S.min())
+
+    if w < h:  # Padding zeros if height < width
+      need = h-w
+      l = need//2
+      img_zer = np.zeros((h, h))
+      img_zer[l: l+w, :] = S
+      img = img_zer[:fft_length//2, :fft_length//2]
+
+    img = np.expand_dims(img, axis=-1)
+    return img
+
 def create_spectrograms_raw(current_window, sample_rate=4000, n_mels=224, f_min=50, f_max=4000, nfft=2048, hop=6): # increase hop -> decrease height of image
     current_window = np.array(current_window)
     S = librosa.feature.melspectrogram(y=current_window, sr=sample_rate, n_mels=n_mels, fmin=f_min, fmax=f_max, n_fft=nfft, hop_length=hop)
@@ -97,6 +123,7 @@ def create_spectrograms_raw(current_window, sample_rate=4000, n_mels=224, f_min=
     img = np.expand_dims(img, axis=0)
     return img
 
+############################################################ VALIDATION MATRICES #################################################
 def accuracy_m(y_true, y_pred):
   correct = 0
   total = 0
@@ -126,7 +153,6 @@ def f1_m(y_true, y_pred):
     recall = recall_m(y_true, y_pred)
     return 2*((precision*recall)/(precision+recall+K.epsilon()))
 
-# MATRICES=================================================================================
 def sensitivity(y_true, y_pred, test=False):
   y_pred = tf.cast(tf.math.argmax(y_pred, axis=-1), dtype=tf.float32)
   y_true = tf.cast(tf.math.argmax(y_true, axis=-1), dtype=tf.float32)
