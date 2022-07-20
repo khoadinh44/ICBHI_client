@@ -124,7 +124,7 @@ def train(args):
           save_df(image_train_data, os.path.join(args.save_data_dir, 'mel_train_data.pkz'))
     
     if args.based_image == 'stft':
-        if os.path.isdir(os.path.join(args.save_data_dir, 'stft_test_data.pkz')):
+        if os.path.exists(os.path.join(args.save_data_dir, 'stft_test_data.pkz')):
           image_test_data = load_df(os.path.join(args.save_data_dir, 'stft_test_data.pkz'))
           image_train_data = load_df(os.path.join(args.save_data_dir, 'stft_train_data.pkz'))
         else:
@@ -157,6 +157,8 @@ def train(args):
           save_df(image_train_data, os.path.join(args.save_data_dir, 'stft_train_data.pkz'))
 
     ######################## TRAIN PHASE ##################################################################
+    print(f'Shape of train data: {image_train_data.shape} \t {train_label.shape}')
+    print(f'Shape of test data: {image_test_data.shape} \t {test_label.shape}')
     if args.model_name == 'EfficientNetV2M':
       model = EfficientNetV2M(args.image_length, True)
     if args.model_name == 'MobileNetV2':
