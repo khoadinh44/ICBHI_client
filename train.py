@@ -91,7 +91,7 @@ def train(args):
     
     ######################## PREPROCESSING DATA ##################################################################
     if args.based_image == 'mel':
-        if os.path.join(args.save_data_dir, 'mel_test_data.pkz'):
+        if os.path.isdir(os.path.join(args.save_data_dir, 'mel_test_data.pkz')):
           image_test_data = load_df(os.path.join(args.save_data_dir, 'mel_test_data.pkz'))
           image_train_data = load_df(os.path.join(args.save_data_dir, 'mel_train_data.pkz'))
         else:
@@ -124,7 +124,7 @@ def train(args):
           save_df(image_train_data, os.path.join(args.save_data_dir, 'mel_train_data.pkz'))
     
     if args.based_image == 'stft':
-        if os.path.join(args.save_data_dir, 'stft_test_data.pkz'):
+        if os.path.isdir(os.path.join(args.save_data_dir, 'stft_test_data.pkz')):
           image_test_data = load_df(os.path.join(args.save_data_dir, 'stft_test_data.pkz'))
           image_train_data = load_df(os.path.join(args.save_data_dir, 'stft_train_data.pkz'))
         else:
