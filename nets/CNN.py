@@ -2,7 +2,11 @@ import tensorflow as tf
 import keras
 from tensorflow.keras.models import Model
 
-# link Neural Network: https://keras.io/api/applications/
+###################################################### link Neural Network: https://keras.io/api/applications/  ###################################
+# image shape: (224, 224, 1)
+# number of class: 4
+# including top: fully connected layers
+# activation in final layer: softmax
 
 def EfficientNetV2M(image_length=224, training=False):
     inputs = keras.Input(shape=(image_length, image_length, 1))
