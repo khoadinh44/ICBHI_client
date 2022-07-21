@@ -138,7 +138,7 @@ def create_spectrograms_raw(current_window, sample_rate=4000, n_mels=224, f_min=
     return img # shape: (1, w, h, 1)
 
 ############################################################ VALIDATION MATRICES #################################################
-# read data_paper.pdf to understand matrices
+# read ICBHI_data_paper.pdf to understand matrices
 def accuracy_m(y_true, y_pred):
   correct = 0
   total = 0
