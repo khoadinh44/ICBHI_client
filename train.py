@@ -37,11 +37,13 @@ args = parser.parse_args()
 def train(args):
     ######################## LOAD DATA ##################################################################
     if os.path.exists(os.path.join(args.save_data_dir, 'test_data.pkz')):
+        # if raw data was splitted before, the splitted data will be loaded data from saved files (.pkz)
         test_data = load_df(os.path.join(args.save_data_dir, 'test_data.pkz'))
         test_label = load_df(os.path.join(args.save_data_dir, 'test_label.pkz'))
         train_data = load_df(os.path.join(args.save_data_dir, 'train_data.pkz'))
         train_label = load_df(os.path.join(args.save_data_dir, 'train_label.pkz'))
     else:
+        # Load file names 
         print('\n' + '-'*10 + 'CATAGORIZE DATA' + '-'*10)
         files_name = []
         for i in os.listdir(args.data_dir):
@@ -53,11 +55,13 @@ def train(args):
         # label (before onehot): normal, crackles, wheezes, both = 0, 1, 2, 3
         labels_data = {0: [], 1: [], 2: [], 3: []}
         for file_name in files_name:
-            audio_file = file_name + '.wav'
-            txt_file = file_name + '.txt'
-            annotations = get_annotations(txt_file, args.data_dir)
-            labels_data = get_sound_samples(labels_data, annotations, audio_file, args.data_dir, sample_rate=4000)
-
+            audio_file = file_name + '.wav' # audio file names
+            txt_file = file_name + '.txt' # annotations file names
+            annotations = get_annotations(txt_file, args.data_dir) # loading annotations 
+            labels_data = get_sound_samples(labels_data, annotations, audio_file, args.data_dir, sample_rate=4000) # loading labels according to the form: normal, crackles, wheezes, both = 0, 1, 2, 3
+        
+        # split data to test and train set.
+        # In each type of label: splitting 80% for train, 20% for test following the paper.
         test_data = []
         test_label = []
         train_data = []
@@ -65,24 +69,27 @@ def train(args):
         for name in labels_data:
             all_data = labels_data[name]
             label = [name]*len(all_data)
-            all_label = np.array([to_onehot(i) for i in label])
+            all_label = np.array([to_onehot(i) for i in label]) # convert label to one-hot type
             
-            X_train, X_test, y_train, y_test = train_test_split(all_data, all_label, test_size=0.2, random_state=42) # 80% for train, 20% for test
-
+            X_train, X_test, y_train, y_test = train_test_split(all_data, all_label, test_size=0.2, random_state=42) 
+            
+            # gather data for train set
             if train_data == []:
                 train_data = X_train
                 train_label = y_train
             else:
                 train_data = np.concatenate((train_data, X_train))
                 train_label = np.concatenate((train_label, y_train))
-
+            
+            # gather data for test set
             if test_data == []:
                 test_data = X_test
                 test_label = y_test
             else:
                 test_data = np.concatenate((test_data, X_test))
                 test_label = np.concatenate((test_label, y_test))
-
+        
+        # save splitted data
         save_df(test_data, os.path.join(args.save_data_dir, 'test_data.pkz'))
         save_df(test_label, os.path.join(args.save_data_dir, 'test_label.pkz'))
         save_df(train_data, os.path.join(args.save_data_dir, 'train_data.pkz'))
@@ -90,25 +97,28 @@ def train(args):
         print('\n' + '-'*10 + 'SAVED DATA' + '-'*10)
     
     ######################## PREPROCESSING DATA ##################################################################
-    if args.based_image == 'mel':
+    if args.based_image == 'mel': # convert raw data to mel spectrogram
         if os.path.isdir(os.path.join(args.save_data_dir, 'mel_test_data.pkz')):
+          # Load mel spectrogram data, if they exist
           image_test_data = load_df(os.path.join(args.save_data_dir, 'mel_test_data.pkz'))
           image_train_data = load_df(os.path.join(args.save_data_dir, 'mel_train_data.pkz'))
         else:
           image_test_data = []
           image_train_data = []
-
+          
+          # start convert 1D test data to mel spectrogram
           print('\n' + 'Convert test data: ...')
           p_te = progressbar.ProgressBar(maxval=len(test_data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
           p_te.start()
           for idx_te, te in enumerate(test_data):
               p_te.update(idx_te+1)
               if len(image_test_data) == 0:
-                  image_test_data = create_spectrograms_raw(te, n_mels=args.image_length)
+                  image_test_data = create_spectrograms_raw(te, n_mels=args.image_length) # API for convert mel spectrogram. It is in utils/tool.py
               else:
                   image_test_data = np.concatenate((image_test_data, create_spectrograms_raw(te, n_mels=args.image_length)), axis=0)
           p_te.finish()
-
+          
+          # start convert 1D train data to mel spectrogram
           print('\n' + 'Convert train data: ...')
           p_tra = progressbar.ProgressBar(maxval=len(train_data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
           p_tra.start()      
@@ -119,18 +129,21 @@ def train(args):
               else:
                   image_train_data = np.concatenate((image_train_data, create_spectrograms_raw(tra, n_mels=args.image_length)), axis=0)
           p_tra.finish()
-
+          
+          # save test and train data
           save_df(image_test_data, os.path.join(args.save_data_dir, 'mel_test_data.pkz'))
           save_df(image_train_data, os.path.join(args.save_data_dir, 'mel_train_data.pkz'))
     
     if args.based_image == 'stft':
         if os.path.exists(os.path.join(args.save_data_dir, 'stft_test_data.pkz')):
+          # Load stft data, if they exist
           image_test_data = load_df(os.path.join(args.save_data_dir, 'stft_test_data.pkz'))
           image_train_data = load_df(os.path.join(args.save_data_dir, 'stft_train_data.pkz'))
         else:
           image_test_data = []
           image_train_data = []
-
+          
+          # start convert 1D test data to stft
           print('\n' + 'Convert test data: ...')
           p_te = progressbar.ProgressBar(maxval=len(test_data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
           p_te.start()
@@ -141,7 +154,8 @@ def train(args):
               else:
                   image_test_data = np.concatenate((image_test_data, create_stft(te)), axis=0)
           p_te.finish()
-
+          
+          # start convert 1D train data to stft
           print('\n' + 'Convert train data: ...')
           p_tra = progressbar.ProgressBar(maxval=len(train_data), widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
           p_tra.start()      
@@ -152,13 +166,16 @@ def train(args):
               else:
                   image_train_data = np.concatenate((image_train_data, create_stft(tra)), axis=0)
           p_tra.finish()
-
+           
+          # save stft-form data
           save_df(image_test_data, os.path.join(args.save_data_dir, 'stft_test_data.pkz'))
           save_df(image_train_data, os.path.join(args.save_data_dir, 'stft_train_data.pkz'))
 
     ######################## TRAIN PHASE ##################################################################
     print(f'\nShape of train data: {image_train_data.shape} \t {train_label.shape}')
     print(f'Shape of test data: {image_test_data.shape} \t {test_label.shape}\n')
+    
+    # load neural network model
     if args.model_name == 'EfficientNetV2M':
       model = EfficientNetV2M(args.image_length, True)
     if args.model_name == 'MobileNetV2':
@@ -191,8 +208,8 @@ def train(args):
       model = ResNet152V2(args.image_length, True)
     
     if args.predict:
+        # outputs validation by matrices: sensitivity, specificity, average_score, harmonic_mean
         model.load_weights(os.path.join(args.model_path, name))
-#         _, test_acc,  test_sensitivity,  test_specificity,  test_average_score, test_harmonic_mean  = model.evaluate(image_test_data, test_label, verbose=0)
         pred_label = model.predict(image_test_data)
         test_acc,  test_sensitivity,  test_specificity,  test_average_score, test_harmonic_mean  = matrices(test_label, pred_label)
         test_acc = round(test_acc*100, 2)
