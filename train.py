@@ -226,8 +226,8 @@ def train(args):
         pred_label = np.argmax(pred_label, axis=-1)
         cm = confusion_matrix(test_label, pred_label, labels=[0, 1, 2, 3])
         disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=['Normal', 'crackle', 'wheeze', 'both'])
-        plt.savefig('model_' + args.model_name + '_' + args.based_image)
         disp.plot()
+        plt.savefig('model_' + args.model_name + '_' + args.based_image)
         plt.show()
         
 if __name__ == "__main__":
