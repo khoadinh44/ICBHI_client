@@ -98,7 +98,7 @@ def train(args):
     
     ######################## PREPROCESSING DATA ##################################################################
     if args.based_image == 'mel': # convert raw data to mel spectrogram
-        if os.path.isdir(os.path.join(args.save_data_dir, 'mel_test_data.pkz')):
+        if os.path.exists(os.path.join(args.save_data_dir, 'mel_test_data.pkz')):
           # Load mel spectrogram data, if they exist
           image_test_data = load_df(os.path.join(args.save_data_dir, 'mel_test_data.pkz'))
           image_train_data = load_df(os.path.join(args.save_data_dir, 'mel_train_data.pkz'))
