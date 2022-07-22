@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from nets.CNN import EfficientNetV2M, MobileNetV2, InceptionResNetV2, ResNet152V2
 from sklearn.model_selection import train_test_split
 from utils.tools import to_onehot, load_df, create_spectrograms_raw, get_annotations, get_sound_samples, save_df, sensitivity, specificity, average_score, harmonic_mean, matrices, create_stft
-from sklearn.metrics import confusion_matrix, accuracy_score
+from sklearn.metrics import confusion_matrix, accuracy_score, ConfusionMatrixDisplay
 import progressbar
 
 # input argmuments
