@@ -211,6 +211,8 @@ def train(args):
         # outputs validation by matrices: sensitivity, specificity, average_score, harmonic_mean
         model.load_weights(os.path.join(args.model_path, name))
         pred_label = model.predict(image_test_data)
+        
+        # Load matrices from predict data
         test_acc,  test_sensitivity,  test_specificity,  test_average_score, test_harmonic_mean  = matrices(test_label, pred_label)
         test_acc = round(test_acc*100, 2)
         test_sensitivity = round(test_sensitivity*100, 2)
@@ -218,6 +220,15 @@ def train(args):
         test_average_score = round(test_average_score*100, 2)
         test_harmonic_mean = round(test_harmonic_mean*100, 2)
         print(f'\nAccuracy: {test_acc} \t SE: {test_sensitivity} \t SP: {test_specificity} \t AS: {test_average_score} \t HS: {test_harmonic_mean}\n')
-
+        
+        # display confution matrix
+        test_label = np.argmax(test_label, axis=-1)
+        pred_label = np.argmax(pred_label, axis=-1)
+        cm = confusion_matrix(test_label, pred_label, labels=[0, 1, 2, 3])
+        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=['Normal', 'crackle', 'wheeze', 'both'])
+        plt.savefig(name)
+        disp.plot()
+        plt.show()
+        
 if __name__ == "__main__":
     train(args)
