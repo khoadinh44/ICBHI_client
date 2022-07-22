@@ -228,7 +228,7 @@ def train(args):
         disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=['Normal', 'crackle', 'wheeze', 'both'])
         disp.plot()
         plt.title(args.model_name + ': ' + args.based_image)
-        plt.savefig(model_path + '/images/' + 'model_' + args.model_name + '_' + args.based_image)
+        plt.savefig(args.model_path + '/images/' + 'model_' + args.model_name + '_' + args.based_image)
         plt.show()
         
 if __name__ == "__main__":
